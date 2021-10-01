@@ -19,9 +19,11 @@ export class GraphqlDemoApplication extends BootMixin(
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
-    this.middleware(async (resolverData, next) => {
+    this.component(GraphQLComponent);
+    const server = this.getSync(GraphQLBindings.GRAPHQL_SERVER);
+
+    server.middleware(async (resolverData, next) => {
       try {
-        console.log('Request does pull through ', resolverData.request.headers)
         return await next();
       } catch (err) {
         /**
@@ -34,11 +36,10 @@ export class GraphqlDemoApplication extends BootMixin(
         }
          */
         console.log(err)
+        throw err;
       }
-    });
+    })
 
-    this.component(GraphQLComponent);
-    const server = this.getSync(GraphQLBindings.GRAPHQL_SERVER);
     this.expressMiddleware('middleware.express.GraphQL', server.expressApp);
 
     // It's possible to register a graphql context resolver
