@@ -43,6 +43,11 @@ export class RecipeResolver implements ResolverInterface<Recipe> {
     return this.recipeRepo.getOne(recipeId);
   }
 
+  @query(returns => Recipe, {nullable: true})
+  async forcedError(@arg('recipeId') recipeId: string) {
+    throw new Error('Testing error propagation');
+  }
+
   @query(returns => [Recipe])
   async recipes(): Promise<Recipe[]> {
     return this.recipeRepo.getAll();

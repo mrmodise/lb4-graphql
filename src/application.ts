@@ -19,6 +19,24 @@ export class GraphqlDemoApplication extends BootMixin(
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
+    this.middleware(async (resolverData, next) => {
+      try {
+        console.log('Request does pull through ', resolverData.request.headers)
+        return await next();
+      } catch (err) {
+        /**
+         * Trigger the error with the following query
+         query {
+             forcedError(recipeId: "1") {
+                specification
+                ratings
+             }
+        }
+         */
+        console.log(err)
+      }
+    });
+
     this.component(GraphQLComponent);
     const server = this.getSync(GraphQLBindings.GRAPHQL_SERVER);
     this.expressMiddleware('middleware.express.GraphQL', server.expressApp);
